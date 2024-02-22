@@ -128,7 +128,7 @@ public class Client {
 						viewOrder(stdIn, out, in); // 커피 주문 내역 조회 처리
 						break;
 					case "3":
-						coupon(stdIn, out, in); // 채팅방 이동 처리
+						coupon(stdIn, out, in); // 쿠폰등록 처리
 						break;
 					case "4":
 						selectStore(stdIn, out, in);
@@ -168,8 +168,35 @@ public class Client {
 				json.put("coupon", promptForInput(stdIn, "쿠폰을 입력해주세요"));
 
 				out.println(json.toString());
-				handleServerResponse(stdIn, out, in); // 서버로부터의 응답 처리
+				handlCouponResponse(stdIn, out, in); // 서버로부터의 응답 처리
 			}
+			
+			private static void handlCouponResponse(BufferedReader stdIn,PrintWriter out, BufferedReader in) throws IOException, ParseException {
+				JSONParser parser = new JSONParser();
+				try {
+					String responseString = in.readLine();
+					if (responseString != null) {
+						JSONObject response = (JSONObject) parser.parse(responseString);
+						System.out.println("서버 응답" + response.toJSONString());
+
+						// 로그인 응답 처리
+						if (response.containsKey("로그인상태")) {
+						  String loginStatus =(String) response.get("로그인상태");
+						       if(loginStatus.equals("성공")) {
+						            handleLoginSuccess(stdIn, out, in);
+						        } else {
+						            System.out.println("로그인에 실패했습니다. 다시 시도해주세요.");
+						        }
+						        }
+					} else {
+						System.out.println("서버로부터 응답을 받지 못했습니다.");
+					}
+				} catch (ParseException e) {
+					System.out.println("서버로부터 응답을 파싱하는 중 오류가 발생했습니다: " + e.getMessage());
+				}
+				
+			}
+			
 			
 			// 추가 : 커피 주문 조회 메서드
 			private static void viewOrder(BufferedReader stdIn, PrintWriter out, BufferedReader in) {
