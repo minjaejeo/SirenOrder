@@ -137,7 +137,7 @@ public class Server {
                     String cc = (String) jsonRequest.get("coupon");
                     // Signup 클래스의 register 메서드를 호출하여 회원가입 처리
                     // 결과는 JSON 문자열 형태로 반환됨
-                    String ca = CouponRegistration.register(cc);
+                    String ca = CouponRegistration.Registration(cc);
                     // 처리 결과를 클라이언트에게 전송
                     out.println(ca);
                     break;

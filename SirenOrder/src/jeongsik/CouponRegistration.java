@@ -27,7 +27,7 @@ public class CouponRegistration {
      * @param password 사용자 비밀번호
      * @return 회원가입 결과를 나타내는 JSON 문자열
      */
-    public static String register(String coffeecupon) {
+    public static String Registration(String coffeecupon) {
     	//DB에 연결하는 객체 선언
     	Connection connection = null;
     	
