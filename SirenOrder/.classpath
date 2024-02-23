@@ -6,12 +6,12 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="src/jeongsik/json-simple-1.1.1.jar">
+	<classpathentry kind="lib" path="D:/Lecture/MainSirenOrder/SirenOrder/src/jeongsik/json-simple-1.1.1.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="src/jeongsik/ojdbc11.jar">
+	<classpathentry kind="lib" path="D:/Lecture/MainSirenOrder/SirenOrder/src/jeongsik/ojdbc11.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>

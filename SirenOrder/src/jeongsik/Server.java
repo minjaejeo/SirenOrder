@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -18,7 +19,10 @@ import org.json.simple.parser.ParseException;
 public class Server {
     private static final int PORT = 9999; // 서버가 수신 대기할 포트 번호
     private static final Logger logger = Logger.getLogger(Server.class.getName()); // 로깅을 위한 로거
-
+    
+ // 세션을 위한 해시맵 선언
+ 	private static HashMap<String, String> sessions = new HashMap<>();
+ 	
     public static void main(String[] args) {
         ExecutorService executor = Executors.newCachedThreadPool(); // 클라이언트 처리를 위한 스레드 풀
 
@@ -89,17 +93,28 @@ public class Server {
                 // 클라이언트로부터 받은 명령에 따라 적절한 처리 수행
             // 클라이언트로부터 받은 명령에 따라 적절한 처리 수행
             switch (command) {
-                case "login":
-                    // 로그인 명령 처리
-                    // jsonRequest에서 username과 password를 추출
-                    String usernameLogin = (String) jsonRequest.get("userid");
-                    String passwordLogin = (String) jsonRequest.get("password");
-                    // Login 클래스의 login 메서드를 호출하여 로그인 처리
-                    // 결과는 JSON 문자열 형태로 반환됨
-                    String loginResult = Login.login(usernameLogin, passwordLogin);
-                    // 처리 결과를 클라이언트에게 전송
-                    out.println(loginResult);
-                    break;
+            case "login":
+				JSONObject loginResponse = new JSONObject();
+				// 로그인 명령 처리
+				// jsonRequest에서 username과 password를 추출
+				String usernameLogin = (String) jsonRequest.get("userid");
+				String passwordLogin = (String) jsonRequest.get("password");
+				// Login 클래스의 login 메서드를 호출하여 로그인 처리
+				// 결과는 JSON 문자열 형태로 반환됨
+				String loginResult = Login.login(usernameLogin, passwordLogin);
+				if (loginResult.contains("성공")) {
+					// 세션 생성 및 저장
+					String sessionID = usernameLogin; // 클라이언트의 아이디를 세션 ID로 사용
+					sessions.put(sessionID, usernameLogin); // 세션을 Map에 저장
+
+					// JSON 응답 구성
+					
+					loginResponse.put("type", "login_response");
+					loginResponse.put("result", loginResult);
+					loginResponse.put("sessionID", sessionID);
+				}
+				// 처리 결과를 클라이언트에게 전송
+				out.println(loginResponse.toJSONString());
                 case "signup":
                     // 회원가입 명령 처리
                     // jsonRequest에서 username과 password를 추출
@@ -154,6 +169,28 @@ public class Server {
                 	jsonResponse.put("message", "매장이 성공적으로 선택되었습니다.");
                 	out.println(jsonResponse.toJSONString());
                 	break;
+                case "point_charge":
+					// 포인트 충전 명령 처리
+					String sessionID = (String) jsonRequest.get("sessionID");
+					int chargeAmount = Integer.parseInt((String) jsonRequest.get("amount"));
+
+					boolean chargeSuccess = true; // 포인트 충전 성공 여부를 나타내닌 변수
+					JSONObject pointResponse = new JSONObject();
+					if (chargeSuccess) {
+						
+						pointResponse.put("type", "point_charge_response");
+						pointResponse.put("status", "success");
+						pointResponse.put("message", "포인트가 성공적으로 충전되었습니다.");
+					} else {
+						pointResponse.put("type", "point_charge_response");
+						pointResponse.put("status", "failure");
+						pointResponse.put("message", "포인트 충전에 실패했습니다.");
+					}
+
+					// 처리 결과를 클라이언트에게 전송
+					out.println(pointResponse.toJSONString());
+					break;
+	
                     
                 default:
                     // 알 수 없는 명령에 대한 처리
@@ -172,4 +209,19 @@ public class Server {
             }
         }
     }
+    // 클라이언트로부터 받은 메시지를 처리하는 메서드
+    private void handleClientInput(String input, PrintWriter out) throws ParseException {
+        try {
+            JSONParser parser = new JSONParser();
+            JSONObject jsonObject = (JSONObject) parser.parse(input);
+
+            // 클라이언트로부터 받은 메시지를 처리하는 로직을 추가하세요
+            // 이 예제에서는 간단히 클라이언트에게 다시 응답을 보내는 것으로 대체합니다.
+            out.println("서버로부터의 응답: " + input);
+        } catch (ParseException e) {
+            System.out.println("클라이언트로부터 받은 메시지를 파싱하는 중 오류 발생: " + e.getMessage());
+        }
+    }
 }
+
+
