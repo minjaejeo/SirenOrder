@@ -54,8 +54,10 @@ public class Login {
             resultSet = statement.executeQuery();
             if (resultSet.next() && resultSet.getInt(1) == 1) {
                 jsonResponse.put("로그인상태", "성공");
+                jsonResponse.put("sessionID", username); // 세션 아이디는 여기서 사용자 이름으로 설정
             } else {
                 jsonResponse.put("로그인상태", "실패");
+                jsonResponse.put("메시지", "잘못된 사용자 이름 또는 비밀번호입니다.");
             }
         } catch (ClassNotFoundException | SQLException e) {
             logger.log(Level.SEVERE, "로그인 처리 중 오류 발생", e);

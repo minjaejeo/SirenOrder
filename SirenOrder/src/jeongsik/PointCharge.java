@@ -56,6 +56,18 @@ public class PointCharge {
 				break; //충전절차 진행
 			}else if("아니오".equals(response)) {
 				System.out.println("포인트 충전을 취소했습니다.");
+				
+				JSONObject chargeInfo = new JSONObject();
+				chargeInfo.put("type", "chargeResult");
+				chargeInfo.put("포인트충전", "취소");
+				chargeInfo.put("username", username);
+				//chargeInfo.put("chargeAmount", chargeAmount);
+				//chargeInfo.put("newPoint", newPoint);
+				out.println(chargeInfo.toJSONString()); 
+				
+				
+				
+				out.flush();
 				return; // 로그인 메누로 돌아가는 코드 추가 필요
 			}else {
 				System.out.println("잘못된 입력입니다. 다시 입력해주세요.");

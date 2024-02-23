@@ -76,13 +76,7 @@ public class Signup {
         return jsonResponse.toJSONString();
     }
 
-    /**
-     * 데이터베이스 관련 리소스를 안전하게 닫는 유틸리티 메서드.
-     *
-     * @param resultSet 결과 집합
-     * @param statement SQL 문
-     * @param connection 데이터베이스 연결
-     */
+   
     private static void closeResources(ResultSet resultSet, PreparedStatement statement, Connection connection) {
         try {
             if (resultSet != null) resultSet.close();

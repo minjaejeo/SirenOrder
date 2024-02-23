@@ -110,11 +110,20 @@ public class Server {
 					// JSON 응답 구성
 					
 					loginResponse.put("type", "login_response");
-					loginResponse.put("result", loginResult);
+					loginResponse.put("로그인상태", "성공");
+					//loginResponse.put("result", loginResult);
 					loginResponse.put("sessionID", sessionID);
+				}else {
+					//로그인 실패 처리
+					//json 응답 구성
+					//loginResponse.put("type","login_response");
+					loginResponse.put("로그인상태", "실패");
+					loginResponse.put("message","잘못된 아이디 또는 비빌번호입니다.");
 				}
 				// 처리 결과를 클라이언트에게 전송
 				out.println(loginResponse.toJSONString());
+					break;
+					
                 case "signup":
                     // 회원가입 명령 처리
                     // jsonRequest에서 username과 password를 추출

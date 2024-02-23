@@ -105,42 +105,160 @@ public class Client {
 		JSONParser parser = new JSONParser();
 		String responseString = in.readLine();
 
-		
-
 		if (responseString != null) {
 			try {
 				JSONObject response = (JSONObject) parser.parse(responseString);
+				System.out.println("서버 응답: " + response.toJSONString());
 
 				// 로그인 응답 처리
-				if (response.containsKey("로그인상태")) {
-					String loginStatus = (String) response.get("로그인상태");
-					// 로그인 성공시 처리
-					if (loginStatus.equals("성공")) {
-						handleLoginSuccess(stdIn, out, in, (String) response.get("sessionID"));
-						// 세션 아이디를 전달하여 로그인 성공 처리
+				if (response.containsKey("로그인상태")
+						|| (response.containsKey("type") && response.get("type").equals("login_response"))) {
+					String loginStatus;
+					String sessionID;
 
+					// "로그인 상태"와 "세션 ID" 추출
+					if (response.containsKey("로그인상태")) {
+						loginStatus = (String) response.get("로그인상태");
+						sessionID = (String) response.get("sessionID");
 					} else {
-						System.out.println("로그인에 실패했습니다. 다시 시도해주세요.");
-
+						JSONObject resultObj = (JSONObject) new JSONParser().parse((String) response.get("result"));
+						loginStatus = (String) resultObj.get("로그인상태");
+						sessionID = (String) response.get("sessionID");
 					}
-				} else if (response.containsKey("type") && response.get("type").equals("login_response")) {
 
-					String result = (String) response.get("result");
-					JSONObject resultObj = (JSONObject) new JSONParser().parse(result);
-					String loginStatus = (String) resultObj.get("로그인상태");
+					// 로그인 상태에 따른 처리
+					handleLoginResponse(loginStatus, sessionID, stdIn, out, in);
+					// 로그인 상태에 따른 처리
+//	                if (loginStatus.equals("성공")) {
+//	                    System.out.println("로그인 상태: " + loginStatus);
+//	                    System.out.println("세션 ID: " + sessionID);
+//	                } else {
+//	                    // 실패 시 처리
+//	                    System.out.println("로그인에 실패했습니다.");
 
-					if (loginStatus.equals("성공")) {
-						System.out.println("로그인에 성공했습니다.");
-						handleLoginSuccess(stdIn, out, in, (String) response.get("sessionID"));
-					} else {
-						System.out.println("로그인에 실패했습니다. 다시 시도해주세요.");
-					}
+				} else {
+					// 올바르지 않은 응답이면 처리하지 않음
+					// System.out.println("올바르지 않은 서버 응답입니다.");
 				}
 			} catch (ParseException e) {
 				System.out.println("서버로부터 응답을 파싱하는 중 오류가 발생했습니다: " + e.getMessage());
+			} catch (NullPointerException e) {
+				System.out.println("서버 응답에서 필요한 정보가 없습니다.");
 			}
 		}
 	}
+
+	// 로그인 응답 처리 메서드
+	private static void handleLoginResponse(String loginStatus, String sessionID, BufferedReader stdIn, PrintWriter out,
+			BufferedReader in) throws IOException, ParseException {
+		// 로그인 성공시 처리
+		if (loginStatus.equals("성공")) {
+			System.out.println("로그인에 성공했습니다.");
+			handleLoginSuccess(stdIn, out, in, sessionID);
+		} else {
+			// 로그인 실패시 처리
+			switch (loginStatus) {
+			case "존재하지 않는 아이디":
+				System.out.println("해당 아이디는 가입된 아이디가 아닙니다.");
+				break;
+			case "비밀번호 오류":
+				System.out.println("비밀번호가 틀렸습니다. 다시 확인해주세요.");
+				break;
+			default:
+				System.out.println("로그인에 실패했습니다. 다시 시도해주세요.");
+				break;
+			}
+		}
+	}
+
+//	public static void handleServerResponse(BufferedReader stdIn, PrintWriter out, BufferedReader in)
+//			throws IOException, ParseException {
+//		JSONParser parser = new JSONParser();
+//		String responseString = in.readLine();
+//
+//		if (responseString != null) {
+//		    try {
+//		        JSONObject response = (JSONObject) parser.parse(responseString);
+//		        System.out.println("서버 응답: " + response.toJSONString());
+//		        // 로그인 응답 처리
+//		        if (response.containsKey("로그인상태") || (response.containsKey("type") && response.get("type").equals("login_response"))) {
+//		            String loginStatus;
+//		            String sessionID;
+//
+//		            // "로그인 상태"와 "세션 ID" 추출
+//		            if (response.containsKey("로그인상태")) {
+//		                loginStatus = (String) response.get("로그인상태");
+//		                sessionID = (String) response.get("sessionID");
+//		            } else {
+//		                JSONObject resultObj = (JSONObject) new JSONParser().parse((String) response.get("result"));
+//		                loginStatus = (String) resultObj.get("로그인상태");
+//		                sessionID = (String) response.get("sessionID");
+//		            }
+//
+//		            // 로그인 성공시 처리
+//		            if (loginStatus.equals("성공")) {
+//		                System.out.println("로그인에 성공했습니다.");
+//		                handleLoginSuccess(stdIn, out, in, sessionID);
+//		            } else {
+//		                // 로그인 실패시 처리
+//		                if (loginStatus.equals("존재하지 않는 아이디")) {
+//		                    System.out.println("해당 아이디는 가입된 아이디가 아닙니다.");
+//		                } else if (loginStatus.equals("비밀번호 오류")) {
+//		                    System.out.println("비밀번호가 틀렸습니다. 다시 확인해주세요.");
+//		                } else {
+//		                    System.out.println("로그인에 실패했습니다. 다시 시도해주세요.");
+//		                }
+//		            }
+//		        } else {
+//		            // 올바르지 않은 응답이면 처리하지 않음
+//		            //System.out.println("올바르지 않은 서버 응답입니다.");
+//		        }
+//		    } catch (ParseException e) {
+//		        System.out.println("서버로부터 응답을 파싱하는 중 오류가 발생했습니다: " + e.getMessage());
+//		    }
+//		}
+//	}
+
+//		if (responseString != null) {
+//			try {
+//				JSONObject response = (JSONObject) parser.parse(responseString);
+//				
+//				// 로그인 응답 처리
+//				if (response.containsKey("로그인상태")) {
+//					String loginStatus = (String) response.get("로그인상태");
+//					// 로그인 성공시 처리
+//					if (loginStatus.equals("성공")) {
+//						handleLoginSuccess(stdIn, out, in, (String) response.get("sessionID"));
+//						// 세션 아이디를 전달하여 로그인 성공 처리
+//
+//					} else {
+//						// 로그인 실패시 처리
+//						System.out.println("로그인에 실패했습니다. 다시 시도해주세요.");
+//
+//					}
+//				} else if (response.containsKey("type") && response.get("type").equals("login_response")) {
+//
+//					String result = (String) response.get("result");
+//					JSONObject resultObj = (JSONObject) new JSONParser().parse(result);
+//					String loginStatus = (String) resultObj.get("로그인상태");
+//
+//					if (loginStatus.equals("성공")) {
+//						System.out.println("로그인에 성공했습니다.");
+//						handleLoginSuccess(stdIn, out, in, (String) response.get("sessionID"));
+//					} else {
+//						//로그인 실패시 처리
+//						System.out.println("로그인에 실패했습니다. 다시 시도해주세요.");
+//					}
+//				}else {
+//					// 올바른 응답이 아닌 경우
+//	                //System.out.println("올바르지 않은 서버 응답입니다.");
+//					
+//				}
+//			} catch (ParseException e) {
+//				System.out.println("서버로부터 응답을 파싱하는 중 오류가 발생했습니다: " + e.getMessage());
+//			}
+//		}
+//	}
 
 	private static void handleLoginSuccess(BufferedReader stdIn, PrintWriter out, BufferedReader in, String sessionID)
 			throws IOException, ParseException {
@@ -168,6 +286,9 @@ public class Client {
 				pointCharge(stdIn, out, in, sessionID); // 포인트 충전 처리
 				break;
 			case "6":
+				enterOneChatRoom(stdIn, out, in, sessionID, sessions); // 포인트 충전 처리
+				break;
+			case "7":
 				System.out.println("서비스를 종료합니다.");
 				keepRunning = false; // 반복문 종료
 				break;
@@ -185,7 +306,8 @@ public class Client {
 		System.out.println("3. 쿠폰 등록");
 		System.out.println("4. 매장 조회");
 		System.out.println("5. 포인트 충전");
-		System.out.println("6. 종료");
+		System.out.println("6. 채팅방 이동");
+		System.out.println("7. 종료");
 		System.out.println("메뉴를 선택하세요. >> ");
 
 	}
@@ -244,8 +366,10 @@ public class Client {
 		}
 	}
 
-	private static void oneChat(BufferedReader stdIn, PrintWriter out) {
-
+	private static void enterOneChatRoom(BufferedReader stdIn, PrintWriter out, BufferedReader in, String sessionID, Map<String, String> sessions) {
+	    // 채팅방 기능 구현
+		OneChatRoom oneChatRoom = new OneChatRoom(sessions, stdIn, out, in, sessionID);
+		oneChatRoom.startChat();
 	}
 
 	// SelectStroe 를 추가하는 메서드 작성
@@ -261,14 +385,19 @@ public class Client {
 			throws IOException, ParseException {
 
 		// 포인트 충전 객체 생성
-		PointCharge pointCharge = new PointCharge(sessions);
+		PointCharge json = new PointCharge(sessions);
 		// 포인트 충전 메서드 호출
-		pointCharge.chargePoint(stdIn, out, sessionID);
-		// BufferedReader stdIn, PrintWriter out, String sessionID
-		JSONObject jsonPointCharge = new JSONObject();
-
+		json.chargePoint(stdIn, out, sessionID);
+		// 서버로부터의 응답처리
 		handleServerResponse(stdIn, out, in); // 서버로부터의 응답처리
-
+		// 포인트 충전 결과에 관한 JSON 응답을 생성하여 서버로 전송
+		JSONObject jsonPointCharge = new JSONObject();
+		jsonPointCharge.put("type", "point_charge_response");
+		jsonPointCharge.put("status", "success");
+		jsonPointCharge.put("message", "포인트가 성공적으로 충전되었습니다.");
+		out.println(jsonPointCharge.toJSONString());
+		
+		
 	}
 
 	// 세션 인증 요청을 보내는 메서드
