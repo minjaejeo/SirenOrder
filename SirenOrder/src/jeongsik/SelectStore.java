@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 public class SelectStore {
 
     // Oracle 데이터 베이스 연결 정보
-    private static final String DB_URL = "jdbc:oracle:thin:@192.168.0.33:1521/XE"; // XE 대신에 SERVICE_NAME 사용
+    private static final String DB_URL = "jdbc:oracle:thin:@localhost:1521/XE"; // XE 대신에 SERVICE_NAME 사용
     private static final String USER = "C##SALMON"; // 스키마명 추가
     private static final String PASSWORD = "1234"; // 데이터베이스 비밀번호
     private static final Logger logger = Logger.getLogger(DB_URL);
