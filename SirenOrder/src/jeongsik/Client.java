@@ -14,7 +14,7 @@ import org.json.simple.parser.ParseException;
 
 public class Client {
 	// 서버 주소와 포트 번호 설정
-	private static final String serverAddress = "192.168.0.33";
+	private static final String serverAddress = "localhost";
 	private static final int serverPort = 9999;
 	private static String sessionID;
 	private static final Map<String, String> sessions = new HashMap<>(); // 세션을 관리하는 Map

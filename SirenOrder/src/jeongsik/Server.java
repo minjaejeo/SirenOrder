@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -72,9 +71,7 @@ public class Server {
                         JSONObject jsonResponse = new JSONObject();
                         jsonResponse.put("에러", "JSON 파싱 오류");
                         out.println(jsonResponse.toJSONString());
-                    } catch (NoSuchAlgorithmException e) {
-						e.printStackTrace();
-					}
+                    }
                 }
             } catch (IOException e) {
                 logger.log(Level.SEVERE, "클라이언트 핸들링 중 오류 발생", e);
@@ -88,7 +85,7 @@ public class Server {
         }
 
      // 클라이언트로부터 받은 명령을 처리하는 메서드
-        private void processCommand(String command, JSONObject jsonRequest, PrintWriter out) throws NoSuchAlgorithmException {
+        private void processCommand(String command, JSONObject jsonRequest, PrintWriter out) {
             // 클라이언트로부터 받은 응답을 저장할 JSON 객체
             JSONObject jsonResponse = new JSONObject();
             
@@ -118,7 +115,6 @@ public class Server {
 				}
 				// 처리 결과를 클라이언트에게 전송
 				out.println(loginResponse.toJSONString());
-					break;
                 case "signup":
                     // 회원가입 명령 처리
                     // jsonRequest에서 username과 password를 추출
@@ -227,5 +223,3 @@ public class Server {
         }
     }
 }
-
-
