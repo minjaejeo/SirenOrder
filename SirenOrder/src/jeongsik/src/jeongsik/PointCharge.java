@@ -45,54 +45,50 @@ public class PointCharge {
 				return; // 데이터베이스 오류 발생 시
 			}
 
-			
-
 			// 포인트 충전 여부 확인
-			while(true) {
-			System.out.println("포인트를 충전하시겠습니까? (예/아니오): ");
-			String response = stdIn.readLine();
+			while (true) {
+				System.out.println("포인트를 충전하시겠습니까? (예/아니오): ");
+				String response = stdIn.readLine();
 
-			if ("예".equals(response)) {
-				break; //충전절차 진행
-			}else if("아니오".equals(response)) {
-				System.out.println("포인트 충전을 취소했습니다.");
-				
-				JSONObject chargeInfo = new JSONObject();
-				chargeInfo.put("type", "chargeResult");
-				chargeInfo.put("포인트충전", "취소");
-				chargeInfo.put("username", username);
-				//chargeInfo.put("chargeAmount", chargeAmount);
-				//chargeInfo.put("newPoint", newPoint);
-				out.println(chargeInfo.toJSONString()); 
-				
-				
-				
-				out.flush();
-				return; // 로그인 메누로 돌아가는 코드 추가 필요
-			}else {
-				System.out.println("잘못된 입력입니다. 다시 입력해주세요.");
-				//반복문 계속 실행하여 올바른 입력 요청
+				if ("예".equals(response)) {
+					break; // 충전절차 진행
+				} else if ("아니오".equals(response)) {
+					System.out.println("포인트 충전을 취소했습니다.");
+
+					JSONObject chargeInfo = new JSONObject();
+					chargeInfo.put("type", "chargeResult");
+					chargeInfo.put("포인트충전", "취소");
+					chargeInfo.put("username", username);
+					// chargeInfo.put("chargeAmount", chargeAmount);
+					// chargeInfo.put("newPoint", newPoint);
+					out.println(chargeInfo.toJSONString());
+
+					out.flush();
+					return; // 로그인 메누로 돌아가는 코드 추가 필요
+				} else {
+					System.out.println("잘못된 입력입니다. 다시 입력해주세요.");
+					// 반복문 계속 실행하여 올바른 입력 요청
+				}
 			}
-			}
-			
+
 			int chargeAmount = 0;
-			
-			while(true) {
-			
-			// 충전할 금액 입력받음
-			System.out.println("충전할 금액을 입력하세요: ");
-			String input = stdIn.readLine();//사용자 입력받기
-			try {
-			chargeAmount = Integer.parseInt(input); //문자열을 정수로 변환
-			//금액이 양수인지 검증
-			if(chargeAmount>0) {
-				break; //금액이 유효하면 반복문 종료
-			}else {
-				System.out.println("잘못된 입력입니다. 다시 입력해주세요.");
-			}
-			}catch (NumberFormatException  e) {
-				System.out.println("잘못된 입력입니다. 숫자를 입력해주세요.");
-			}
+
+			while (true) {
+
+				// 충전할 금액 입력받음
+				System.out.println("충전할 금액을 입력하세요: ");
+				String input = stdIn.readLine();// 사용자 입력받기
+				try {
+					chargeAmount = Integer.parseInt(input); // 문자열을 정수로 변환
+					// 금액이 양수인지 검증
+					if (chargeAmount > 0) {
+						break; // 금액이 유효하면 반복문 종료
+					} else {
+						System.out.println("잘못된 입력입니다. 다시 입력해주세요.");
+					}
+				} catch (NumberFormatException e) {
+					System.out.println("잘못된 입력입니다. 숫자를 입력해주세요.");
+				}
 			}
 			// 사용자로부터 충전 금액 입력받음
 
@@ -100,20 +96,17 @@ public class PointCharge {
 			int newPoint = currentPoint + chargeAmount; // 새로운 포인트 계산
 			if (updatePointInDatabase(newPoint, username)) {// 데이터베이스 업데이트 성공시
 				System.out.println("충전 완료. 현재 포인트 잔액: " + newPoint + "원");
-				
-				//충전 정보를 JSON 객체로 생성하여 로그 또는 서버로 전송
+
+				// 충전 정보를 JSON 객체로 생성하여 로그 또는 서버로 전송
 				JSONObject chargeInfo = new JSONObject();
 				chargeInfo.put("type", "chargeResult");
 				chargeInfo.put("username", username);
 				chargeInfo.put("chargeAmount", chargeAmount);
 				chargeInfo.put("newPoint", newPoint);
-				out.println(chargeInfo.toJSONString()); 
+				out.println(chargeInfo.toJSONString());
 				// 서버로 충전 완료 정보 전송
 				out.flush();
-				
-				
-				
-				 
+
 			} else {
 				System.out.println("포인트 충전에 실패했습니다.");
 			}
@@ -122,12 +115,8 @@ public class PointCharge {
 		} catch (NumberFormatException e) {
 			System.out.println("유효하지 않은 금액입니다. 숫자를 입력해주세요.");
 		}
-		
-		}
-	
-		 
-	
 
+	}
 
 	public int getPointFromDatabase(String username) {
 		Connection connection = null;
@@ -145,7 +134,7 @@ public class PointCharge {
 
 			resultSet = statement.executeQuery();
 			if (resultSet.next()) {
-				point =  resultSet.getInt("points");
+				point = resultSet.getInt("points");
 				System.out.println("현재 포인트 잔액 : " + point + "원");
 			}
 		} catch (ClassNotFoundException | SQLException e) {
@@ -187,9 +176,6 @@ public class PointCharge {
 		}
 		return success;
 	}
-	
-
-	
 
 	private void closeResources(ResultSet resultSet, PreparedStatement statement, Connection connection) {
 		try {

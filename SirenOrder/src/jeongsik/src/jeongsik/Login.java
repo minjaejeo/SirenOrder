@@ -1,6 +1,5 @@
 package jeongsik;
 
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -12,10 +11,9 @@ import java.util.logging.Logger;
 import org.json.simple.JSONObject;
 
 public class Login {
-	// Oracle 데이터베이스 연결 정보
-    private static final String DB_URL = "jdbc:oracle:thin:@192.168.0.33:1521:XE"; // Oracle 서버 주소와 포트
-    private static final String USER = "c##salmon"; // 데이터베이스 사용자 이름
-    private static final String PASSWORD = "1234"; // 데이터베이스 비밀번호
+    private static final String DB_URL = "jdbc:oracle:thin:@localhost:1521:XE";
+    private static final String USER = "c##salmon";
+    private static final String PASSWORD = "1234";
     private static final Logger logger = Logger.getLogger(Login.class.getName());
 
     /**
@@ -34,27 +32,18 @@ public class Login {
         JSONObject jsonResponse = new JSONObject();
 
         try {
-            // Oracle JDBC 드라이버 로드
             Class.forName("oracle.jdbc.driver.OracleDriver");
-
-            // 데이터베이스 연결
             connection = DriverManager.getConnection(DB_URL, USER, PASSWORD);
 
-            // SQL 쿼리 작성: 사용자 이름과 비밀번호를 기준으로 사용자 존재 여부 확인
             String query = "SELECT COUNT(*) FROM users WHERE username = ? AND password = ?";
-            
-            // PreparedStatement 사용하여 SQL 쿼리 실행
             statement = connection.prepareStatement(query);
             statement.setString(1, username);
-            // 보안 주의: 실제 애플리케이션에서는 비밀번호를 평문으로 저장하거나 비교해서는 안 됩니다.
-            // 비밀번호는 해시화하여 저장하고, 로그인 시 해시된 비밀번호를 비교해야 합니다.
             statement.setString(2, password);
 
-            // 쿼리 실행 및 결과 처리
             resultSet = statement.executeQuery();
             if (resultSet.next() && resultSet.getInt(1) == 1) {
                 jsonResponse.put("로그인상태", "성공");
-                jsonResponse.put("sessionID", username); // 세션 아이디는 여기서 사용자 이름으로 설정
+                jsonResponse.put("sessionID", username);
             } else {
                 jsonResponse.put("로그인상태", "실패");
                 jsonResponse.put("메시지", "잘못된 사용자 이름 또는 비밀번호입니다.");
@@ -63,7 +52,6 @@ public class Login {
             logger.log(Level.SEVERE, "로그인 처리 중 오류 발생", e);
             jsonResponse.put("로그인상태", "실패");
         } finally {
-            // 리소스 정리
             try {
                 if (resultSet != null) resultSet.close();
                 if (statement != null) statement.close();
