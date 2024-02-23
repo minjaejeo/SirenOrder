@@ -40,23 +40,24 @@ public class CouponRegistration {
     	JSONObject jsonResponse = new JSONObject();
     	
     	try {
-    		// 드라이버를 로드함
+    		// 해당 클래스 전체 경로에서 드라이버를 로드함
     		Class.forName("oracle.jdbc.driver.OracleDriver");
     		
     		// 드라이버에 연결
     		connection = DriverManager.getConnection(DB_URL, USER, PASSWORD);
     		
-    		// COUNT 함수를 사용하여 해당 조건(입력한 ID와 동일한 이름이 있는지 갯수를 셈)에 맞는 레코드의 수를 세어줌
-    		// '나중에 ?에 내가 입력한 쿠폰이 들어갈거임'
+    		// SQL 쿼리문: COUNT 함수를 사용하여 해당 조건(입력한 ID와 동일한 이름이 있는지 갯수를 셈)에 맞는 레코드의 수를 세어줌
+    		// 나중에 '?'에 입력한 쿠폰이 들어감
     		String checkQuery = "SELECT COUNT(*) FROM COFFEECOUPON WHERE COFFEECOUPON = ?";
     		
-    		// 미리 컴파일된 SQL 쿼리가 담겨있는 변수'ckeckQuery'를 담음
+    		// 위에 작성된 SQL 쿼리를 PreparedStatement 객체를 사용해서 미리 컴파일 시킴
     		statement = connection.prepareStatement(checkQuery);
     		
-    		// 위에 첫번째(어차피 ?는 한개뿐이긴 함)?에 내가 입력한 cofffeecoupon을 담음
+    		// 위에 첫번째(어차피 '?'는 한개뿐이긴 함)'?'에 입력한 cofffeecoupon을 담음
+    		// 'coffeecupon' 변수의 값은 client에서 'Registration' 변수를 호출할때 채워질거임
     		statement.setString(1, coffeecupon);
     		
-    		// executeQuery함수를 사용하여 미리 컴파일하여 담아 두었던 check커리문을 실행 시킴 
+    		// executeQuery함수를 사용하여 미리 컴파일하여 하였던 check쿼리문을 실행 시킴
     		// 결과를 resultSet에 저장
     		resultSet = statement.executeQuery();
     		
@@ -72,7 +73,7 @@ public class CouponRegistration {
     		}
     		
     		// INSERT문을 사용하여 새로운 사용자를 데이터베이스에 등록하는 SQL 쿼리 정의
-    		// ? 는 내가 입력한 쿠폰이 채워질거임
+    		// '?' 는 입력한 쿠폰이 채워질거임
     		String insertQurery = "INSERT INTO COFFEECOUPON (COFFEECOUPON) VALUES(?)";
     		
     		// 미리 컴파일된 SQL 문이 담겨있는 'insertQuery'라는 변수를 담음
@@ -85,7 +86,7 @@ public class CouponRegistration {
     		// 행이 늘어나므로 그 행의 갯수를 'rowslnserted' 변수에 저장함
     		int rowslnserted = statement.executeUpdate();
     		
-    		// DB안에 user테이블의 늘어난 행의 갯수 'rowslnserted'이 1개 이상일 경우 0개이하면 실패
+    		// DB안에 coffeecoupon 테이블의 늘어난 행의 갯수 'rowslnserted'이 1개 이상일 경우 0개이하면 실패
     		jsonResponse.put("쿠폰 조회 결과", rowslnserted>0? "성공>> 쿠폰 등록이 완료 되었습니다.": "실패" );
     		
     	// 	register 메서드에서 데이터베이스 연결과 관련된 예외인 ClassNotFoundException과 SQLException을 처리

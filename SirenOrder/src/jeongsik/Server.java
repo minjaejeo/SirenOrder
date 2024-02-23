@@ -133,9 +133,9 @@ public class Server {
                     
                 case "couponRegistration":
                     // 회원가입 명령 처리
-                    // jsonRequest에서 username과 password를 추출
+                    // jsonRequest에서 coffeecoupon을 추출
                     String cc = (String) jsonRequest.get("coupon");
-                    // Signup 클래스의 register 메서드를 호출하여 회원가입 처리
+                    // CouponRegistation 클래스의 Registration 메서드를 호출하여 쿠폰등록 처리
                     // 결과는 JSON 문자열 형태로 반환됨
                     String ca = CouponRegistration.Registration(cc);
                     // 처리 결과를 클라이언트에게 전송
