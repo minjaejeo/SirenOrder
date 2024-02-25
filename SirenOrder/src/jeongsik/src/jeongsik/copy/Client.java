@@ -45,6 +45,7 @@ public class Client {
 							break;
 						case "3":
 							System.out.println("사이렌오더 서버 연결을 종료합니다."); // 프로그램 종료
+							socket.close();
 							return;
 						default:
 							System.out.println("잘못된 입력입니다. 다시 선택해주세요."); // 잘못된 입력 처리
