@@ -93,7 +93,7 @@ public class OneChatRoom {
 
 			while (true) {
 				// 사용자 입력 처리
-				System.out.print("[" + userId + "]: ");
+				System.out.println("[" + userId + "]: ");
 				String message = stdIn.readLine();
 
 				// 사용자가 입력한 메시지가 명령어인지 확인

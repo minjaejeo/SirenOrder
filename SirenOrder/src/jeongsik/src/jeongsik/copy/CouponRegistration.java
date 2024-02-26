@@ -12,7 +12,7 @@ import org.json.simple.JSONObject;
 
 public class CouponRegistration {
     // Oracle 데이터베이스 연결 정보
-    private static final String DB_URL = "jdbc:oracle:thin:@localhost:1521:XE"; // 변경될 수 있는 정보는 외부 설정에서 관리하는 것이 좋습니다.
+    private static final String DB_URL = "jdbc:oracle:thin:@192.168.0.33:1521:XE"; // 변경될 수 있는 정보는 외부 설정에서 관리하는 것이 좋습니다.
     private static final String USER = "c##salmon"; // 데이터베이스 사용자 이름
     private static final String PASSWORD = "1234"; // 데이터베이스 비밀번호
 
@@ -69,7 +69,7 @@ public class CouponRegistration {
     			
     			
     			// 클라이언트에게 "쿠폰 조회 결과, "실패>>이미 사용된 쿠폰입니다" 메시지 전송
-    			return jsonResponse.toJSONString();
+//    			return jsonResponse.toJSONString();
     		}
     		
     		// INSERT문을 사용하여 새로운 사용자를 데이터베이스에 등록하는 SQL 쿼리 정의

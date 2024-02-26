@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 import org.json.simple.JSONObject;
 
 public class Login {
-    private static final String DB_URL = "jdbc:oracle:thin:@localhost:1521:XE";
+    private static final String DB_URL = "jdbc:oracle:thin:@192.168.0.33:1521:XE";
     private static final String USER = "c##salmon";
     private static final String PASSWORD = "1234";
     private static final Logger logger = Logger.getLogger(Login.class.getName());
